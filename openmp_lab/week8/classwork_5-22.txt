@@ -1,0 +1,13 @@
+Thomas Kinch
+5/22/18
+
+Part A:
+
+1) This code attempts to parallelize everything within the for loop brackets.  It creates a thread for each iteration of the for loop.
+
+2) This code parallelizes everything in the for loop.  Each thread gets its own copy of 'j'.
+
+3) This code attempts to parallelize everything within the brackets.  This type of processing is multi-processing.
+
+4) The code within the brackets will be offloaded to the coprocessor. 
+

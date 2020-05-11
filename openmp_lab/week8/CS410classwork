@@ -1,0 +1,53 @@
+Thomas Kinch
+5/22/18
+
+Part A:
+
+1) This code attempts to parallelize everything within the for loop brackets.  It creates a thread for each iteration of the for loop.
+
+2) This code parallelizes everything in the for loop.  Each thread gets its own copy of 'j'.
+
+3) This code attempts to parallelize everything within the brackets.  This type of processing is multi-processing.
+
+4) The code within the brackets will be offloaded to the coprocessor. 
+
+Part B:
+
+1)lock-omp.c
+	
+   a) output of code:
+    Lock set by thread 3
+    Waited 1 second
+    Lock set by thread 1
+    Waited 1 second
+    Lock set by thread 7
+    Waited 1 second
+    Lock set by thread 5
+    Waited 1 second
+    Lock set by thread 2
+    Waited 1 second
+    Lock set by thread 0
+    Waited 2 seconds
+    Lock set by thread 6
+    Waited 1 second
+    Lock set by thread 4
+    Waited 1 second
+	
+   b)
+int main(){ 
+     omp_lock_t lck;
+     omp_init_lock(&lck);
+  
+     #pragma omp parallel num_threads(8) 
+     {
+        #pragma omp master
+           omp_set_lock(&lck);
+           printf("Lock set by thread %d\n", omp_get_thread_num());
+           omp_unset_lock(&lck);
+     }
+     return 0;
+}
+
+
+2)Bubble Sort
+

@@ -1,0 +1,75 @@
+Thomas Kinch
+5/30/18
+
+1)lock-omp.c
+	
+   a) output of code:
+    Lock set by thread 3
+    Waited 1 second
+    Lock set by thread 1
+    Waited 1 second
+    Lock set by thread 7
+    Waited 1 second
+    Lock set by thread 5
+    Waited 1 second
+    Lock set by thread 2
+    Waited 1 second
+    Lock set by thread 0
+    Waited 2 seconds
+    Lock set by thread 6
+    Waited 1 second
+    Lock set by thread 4
+    Waited 1 second
+	
+   b) Modified code with #pragma omp master
+
+	int main(){ 
+     omp_lock_t lck;
+     omp_init_lock(&lck);
+  
+     #pragma omp parallel num_threads(8) 
+     { 
+		#pragma omp master
+		{
+			omp_set_lock(&lck);
+			printf("Lock set by thread %d\n", omp_get_thread_num());	  	
+			sleep(2);
+			printf("Waited 2 seconds\n");
+			omp_unset_lock(&lck);
+		}
+
+		if((omp_get_thread_num()) != 0)
+		{
+			omp_set_lock(&lck);
+			printf("Lock set by thread %d\n", omp_get_thread_num());	  	
+			sleep(1);
+			printf("Waited 1 second\n");
+			omp_unset_lock(&lck);
+		}
+     }
+     return 0;
+	}
+
+	c) Ran lock-omp-partc.c
+
+	With lock:
+		9.055 seconds
+	Without lock:
+		2.022 seconds
+
+
+2)Bubble Sort
+	a) Code for bubble sort: bubble_sort.c
+
+	b) Unrolled code: bubble_unroll.c
+		When you unroll the inner j loop you have multiple instances of the swap function.
+		This being the case, you are constantly accessing two different integers in the
+		array.  For instance B[0] and B[1].  If you were to parallelize the unrolled loop,
+		you would have issues of dependencies.  For instance, one thread is accessing
+		B[1] and B[2], and begins a swap however thread 2 is accessing B[2] and B[3].
+		Thread 2 is therefore looking at the incorrect value.
+			Inorder to parallelize the bubble sort, you would have to make sure the threads
+		weren't accessing the same integers in the array at the same time.
+		For example, B[0] and B[1] can be swapped at the same time as B[5] and B[6] are swapped.
+	
+	c) Code for omp bubble sort: bubble_omp.c
